@@ -55,6 +55,25 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
+def curve(t: Array) -> Tuple[Array, Array]:
+    """ Defined parametric curve C to integrate along (line integral).
+        Returns a tuple of two array types given an array input.
+    """
+    x = np.sin(t)
+    y = t**3
+    return (x, y)
+
+
+def func(x: Array, y: Array) -> Array:
+    """ 3D function f(x, y) """
+    # x^2 + y^2 + z^2 = r^2   ----> z = (r^2 - x^2 - y^2)^(1/2)
+    radius = 1
+    discriminant = radius**2 - x**2 - y**2
+    discriminant[np.where(discriminant < 0)] = 0
+
+    return np.sqrt(discriminant)
+
+
 def main():
     # Define constants for plotting region
     (XL, XU) = (-1, 1)
@@ -69,31 +88,12 @@ def main():
 
     # TODO: Fix the logspace x_range and y_range. Crashing for unknown reason.
 
-    x_range = np.array([-np.log(np.arange(0, 100))[1:]/4.5,
-                        0, np.log(np.arange(0, 100))[1:]/4.5])
+    x_range = -np.log(np.arange(1, 100))[1:]/4.5
+    x_range = np.concatenate((x_range, np.array([0]), np.log(-x_range)))
     y_range = x_range
 
     t_range = np.linspace(TL, TU, num=TSIZE)
     (xgrid, ygrid) = np.meshgrid(x_range, y_range)
-
-    # Define the curve with bounds for t
-    def curve(t: Array) -> Tuple[Array, Array]:
-        """ Defined parametric curve C to integrate along (line integral).
-            Returns a tuple of two array types given an array input.
-        """
-        x = np.sin(t)
-        y = t**3
-        return (x, y)
-
-    def func(x: Array, y: Array) -> Array:
-        """ 3D function f(x, y) """
-        # x^2 + y^2 + z^2 = r^2   ----> z = (r^2 - x^2 - y^2)^(1/2)
-        radius = 1
-        discriminant = radius**2 - x**2 - y**2
-        print(discriminant)
-        discriminant[np.where(discriminant < 0)] = 0
-
-        return np.sqrt(discriminant)
 
     area = our_integrator(func=func, curve=curve, domain=t_range)
     print(f"\nArea: {bcolors.OKGREEN}{area: .4f}{bcolors.ENDC}\n")
