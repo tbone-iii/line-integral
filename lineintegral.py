@@ -79,18 +79,20 @@ def main():
     (XL, XU) = (-1, 1)
     (YL, YU) = (-1, 1)
     (TL, TU) = (-2, 2)
-    TSIZE = 50
-    NUM_POINTS = 100
+    TSIZE = 1000
+    NUM_POINTS = 20
 
     # Determine the gridspace for the plot
-    # x_range = np.linspace(XL, XU, num=NUM_POINTS)
-    # y_range = np.linspace(YL, YU, num=NUM_POINTS)
+    x_range = np.linspace(XL, XU, num=NUM_POINTS)
+    y_range = np.linspace(YL, YU, num=NUM_POINTS)
 
     # TODO: Fix the logspace x_range and y_range. Crashing for unknown reason.
-
-    x_range = -np.log(np.arange(1, 100))[1:]/4.5
-    x_range = np.concatenate((x_range, np.array([0]), np.log(-x_range)))
-    y_range = x_range
+    # temp = np.log(np.arange(1, 100))[1:]
+    # x_range = -temp/temp[-1]
+    # x_range = np.concatenate((x_range,
+    #                           np.linspace(-0.12, 0.12, NUM_POINTS),
+    #                           -x_range))
+    # y_range = x_range
 
     t_range = np.linspace(TL, TU, num=TSIZE)
     (xgrid, ygrid) = np.meshgrid(x_range, y_range)
