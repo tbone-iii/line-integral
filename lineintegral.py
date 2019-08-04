@@ -74,13 +74,23 @@ def func(x: Array, y: Array) -> Array:
     return np.sqrt(discriminant)
 
 
+def func2(x: Array, y: Array) -> Array:
+    """ 3D function f(x, y) """
+    # sinc curve
+    # https://qph.fs.quoracdn.net/main-qimg-8ba30cbe0b2ee5b98e898e4d38cf37b7-c
+
+    f = np.sqrt(x**2+y**2) * np.sinc(np.sqrt(x**2+y**2)) + 0.3
+
+    return f
+
+
 def main():
     # Define constants for plotting region
-    (XL, XU) = (-1, 1)
-    (YL, YU) = (-1, 1)
-    (TL, TU) = (-2, 2)
-    TSIZE = 1000
-    NUM_POINTS = 20
+    (XL, XU) = (-3, 3)
+    (YL, YU) = (-3, 3)
+    (TL, TU) = (-3**(1/3), 3**(1/3))
+    TSIZE = 10**3
+    NUM_POINTS = 1000
 
     # Determine the gridspace for the plot
     x_range = np.linspace(XL, XU, num=NUM_POINTS)
@@ -97,11 +107,11 @@ def main():
     t_range = np.linspace(TL, TU, num=TSIZE)
     (xgrid, ygrid) = np.meshgrid(x_range, y_range)
 
-    area = our_integrator(func=func, curve=curve, domain=t_range)
-    print(f"\nArea: {bcolors.OKGREEN}{area: .4f}{bcolors.ENDC}\n")
+    area = our_integrator(func=func2, curve=curve, domain=t_range)
+    print(f"\nArea: {bcolors.OKGREEN}{area: .8f}{bcolors.ENDC}\n")
 
     # Determine the points for z given the function
-    zgrid = func(xgrid, ygrid)
+    zgrid = func2(xgrid, ygrid)
 
     # Plot the function
     fig = plt.figure()
@@ -111,16 +121,28 @@ def main():
 
     # Plot the projection
     (xt, yt) = curve(t_range)
-    x_indices = np.where(abs(xt) < 1)
-    y_indices = np.where(abs(yt) < 1)
-    indices = np.intersect1d(x_indices, y_indices)
+    # x_indices = np.where(abs(xt) < 1)
+    # y_indices = np.where(abs(yt) < 1)
+    # indices = np.intersect1d(x_indices, y_indices)
 
-    xt, yt = xt[indices], yt[indices]
+    # xt, yt = xt[indices], yt[indices]
     ax.plot(xt, yt, 'b--')
 
     # Plot the curve on the function
-    zt = func(xt, yt)
+    zt = func2(xt, yt)
     ax.plot(xt, yt, zt, 'k')
+
+    # Adjust the plot
+    ax.set_aspect("equal")
+    plt.xlim((XL*1.1, XU*1.1))
+    plt.ylim((YL*1.1, YU*1.1))
+    ax.set_zlim(0, 1.5)
+
+    # Indicate xyz axes
+    ax.set_xlabel(r"x")
+    ax.set_ylabel(r"y")
+    ax.set_zlabel(r"z")
+    ax.set_title(r"Hemisphere $\oint_C f(s) \,ds$"+f" = {area: 0.4f}")
 
     # LAST STATEMENT
     plt.show()
